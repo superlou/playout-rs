@@ -1,0 +1,7 @@
+[package]
+name = "playout-rs"
+version = "0.1.0"
+authors = ["superlou <lousimons@gmail.com>"]
+
+[dependencies]
+gstreamer = "0.7.0"
