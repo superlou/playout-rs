@@ -7,6 +7,7 @@ extern crate regex;
 mod feed;
 mod video_test_feed;
 mod manager;
+mod snowmix_conn;
 
 use video_test_feed::VideoTestFeed;
 use manager::Manager;
