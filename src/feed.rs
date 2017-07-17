@@ -44,12 +44,8 @@ impl Feed {
                                   self.height,
                                   self.framerate);
 
-        let caps = gst::Caps::from_string(&caps_string);
-        last_element.link(&mut shm_sink);
-        let src_pad = last_element.static_pad("src").unwrap();
-        let last_element_caps = src_pad.query_caps(None).unwrap();
-        println!("{}", last_element_caps.to_string());
-        // last_element_caps.set(caps);
+        let caps = gst::Caps::from_string(&caps_string).unwrap();
+        last_element.link_filtered(&mut shm_sink, &caps);
     }
 
     pub fn play(&mut self) {
