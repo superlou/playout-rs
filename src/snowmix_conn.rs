@@ -3,6 +3,7 @@ use std::net::TcpStream;
 use std::time::Duration;
 
 use regex::Regex;
+use std::str;
 
 pub struct SnowmixConn {
     addr: String,
@@ -37,11 +38,17 @@ impl SnowmixConn {
 
     pub fn send(&mut self, msg: &str) {
         let msg = format!("{}\n", msg);
+        println!("Sending: {:?}", msg);
         let _ = self.stream.write(msg.as_bytes());
 
-        let mut response = vec![0; 4096];
-        let _ = self.stream.read(&mut response).unwrap();
-        // println!("{}", String::from_utf8(response).unwrap());
+        // Most valid commands won't have responses.
+        // let mut response = vec![0; 4096];
+        // let rx_len = self.stream.read(&mut response);
+        //
+        // match rx_len {
+        //     Ok(len) => println!("Received: {:?}", &String::from_utf8(response).unwrap()[..len]),
+        //     Err(_) => println!("No response!")
+        // }
     }
 
     pub fn info(&mut self) -> String {
