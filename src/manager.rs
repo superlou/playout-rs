@@ -1,10 +1,12 @@
-use std::fmt;
+use std::thread::sleep;
+use std::time::Duration;
 use snowmix_conn::SnowmixConn;
 use channel::Channel;
 
 pub struct Manager {
     snowmix: SnowmixConn,
-    channels: Vec<Channel>
+    channels: Vec<Channel>,
+    framerate: f32
 }
 
 impl Manager {
@@ -24,23 +26,30 @@ impl Manager {
         }
 
          Manager{snowmix: snowmix,
-                 channels: channels}
+                 channels: channels,
+                 framerate: 30.}
     }
 
     pub fn run(&mut self) {
         println!("{}", self.snowmix.info());
         self.set_program(0);
         self.set_preview(1);
+        self.take();
+        self.transition(0.25);
     }
 
     fn set_program(&mut self, channel_id: usize) {
+        self.set_program_without_update(channel_id);
+        self.update_main_bus();
+    }
+
+    fn set_program_without_update(&mut self, channel_id: usize) {
         match self.get_program() {
             Some(x) => {x.is_program = false},
             None => {}
         }
 
         self.channels[channel_id].is_program = true;
-        self.update_main_bus();
     }
 
     fn set_preview(&mut self, channel_id: usize) {
@@ -72,6 +81,38 @@ impl Manager {
                                    program_id,
                                    preview_id,
                                    dsk_feeds_list));
+    }
+
+    fn take(&mut self) {
+        let current_program_id = match self.get_program() {
+            Some(x) => x.id,
+            None => return
+        };
+
+        let current_preview_id = match self.get_preview() {
+            Some(x) => x.id,
+            None => return
+        };
+
+        self.set_program_without_update(current_preview_id as usize);
+        self.set_preview(current_program_id as usize);
+    }
+
+    fn transition(&mut self, duration: f32) {
+        let frames = (duration * self.framerate).ceil();
+        let delta = 1. / frames;
+        let preview_snowmix_id = match self.get_preview() {
+            Some(channel) => channel.snowmix_id,
+            None => return
+        };
+
+        self.snowmix.send(&format!("vfeed move alpha {} {} {}",
+                                   preview_snowmix_id,
+                                   delta,
+                                   frames));
+
+       sleep(Duration::from_millis((duration * 1000.) as u64));
+       self.take();
     }
 
     fn build_dsks_feeds_list(&self) -> String {
