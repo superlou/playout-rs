@@ -10,6 +10,8 @@ mod manager;
 mod channel;
 mod snowmix_conn;
 
+use std::io;
+
 use video_test_feed::VideoTestFeed;
 use manager::Manager;
 
@@ -23,7 +25,27 @@ fn main() {
     // feed.stop();
 
     let mut manager = Manager::new("127.0.0.1:9999");
-    manager.run();
+    manager.start();
+
+    let mut run = true;
+
+    while run {
+        let mut input = String::new();
+        io::stdin().read_line(&mut input).unwrap();
+        let input = input.trim();
+
+        match input {
+            "q" | "quit" => run = false,
+            "" => manager.take(),
+            "a" => manager.transition(0.25),
+            input => {
+                match input.parse::<i32>() {
+                    Ok(id) => manager.set_preview(id as usize),
+                    Err(_) => {}
+                }
+            }
+        };
+    }
 
     println!("Done");
 }

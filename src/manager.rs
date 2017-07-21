@@ -30,12 +30,10 @@ impl Manager {
                  framerate: 30.}
     }
 
-    pub fn run(&mut self) {
+    pub fn start(&mut self) {
         println!("{}", self.snowmix.info());
         self.set_program(0);
         self.set_preview(1);
-        self.take();
-        self.transition(0.25);
     }
 
     fn set_program(&mut self, channel_id: usize) {
@@ -44,6 +42,10 @@ impl Manager {
     }
 
     fn set_program_without_update(&mut self, channel_id: usize) {
+        if channel_id >= self.channels.len() {
+            return;
+        }
+                
         match self.get_program() {
             Some(x) => {x.is_program = false},
             None => {}
@@ -52,7 +54,11 @@ impl Manager {
         self.channels[channel_id].is_program = true;
     }
 
-    fn set_preview(&mut self, channel_id: usize) {
+    pub fn set_preview(&mut self, channel_id: usize) {
+        if channel_id >= self.channels.len() {
+            return;
+        }
+
         match self.get_preview() {
             Some(x) => {x.is_preview = false},
             None => {}
@@ -83,7 +89,7 @@ impl Manager {
                                    dsk_feeds_list));
     }
 
-    fn take(&mut self) {
+    pub fn take(&mut self) {
         let current_program_id = match self.get_program() {
             Some(x) => x.id,
             None => return
@@ -98,7 +104,7 @@ impl Manager {
         self.set_preview(current_program_id as usize);
     }
 
-    fn transition(&mut self, duration: f32) {
+    pub fn transition(&mut self, duration: f32) {
         let frames = (duration * self.framerate).ceil();
         let delta = 1. / frames;
         let preview_snowmix_id = match self.get_preview() {
