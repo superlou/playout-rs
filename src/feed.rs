@@ -1,6 +1,7 @@
 extern crate gst;
 
 use std::fs;
+use gst::Element;
 
 pub struct Feed {
     pub name: String,
@@ -19,6 +20,10 @@ impl Feed {
     pub fn add_element(&mut self, element_type: &str, name: &str) {
         let element = gst::Element::new(element_type, name).unwrap();
         self.get_pipeline().add(element);
+    }
+
+    pub fn get_element(&mut self, name: &str) -> Option<Element> {
+        self.get_pipeline().get_by_name(name)
     }
 
     pub fn link(&mut self, src_name: &str, dest_name: &str) -> bool {

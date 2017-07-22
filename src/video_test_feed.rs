@@ -28,6 +28,11 @@ impl VideoTestFeed {
          video_test_feed
     }
 
+    pub fn set_pattern(&mut self, pattern: u32) {
+        let mut element = self.feed.get_element("src").unwrap();
+        element.set("pattern", pattern);
+    }
+
     pub fn play(&mut self) {
         self.feed.play();
     }

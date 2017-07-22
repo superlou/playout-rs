@@ -22,6 +22,7 @@ fn main() {
     feed1.play();
 
     let mut feed2 = VideoTestFeed::new("feed2", 1280, 720, "30/1");
+    feed2.set_pattern(1);
     feed2.play();
 
     let mut manager = Manager::new("127.0.0.1:9999");
