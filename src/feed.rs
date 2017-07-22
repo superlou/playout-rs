@@ -1,5 +1,7 @@
 extern crate gst;
 
+use std::fs;
+
 pub struct Feed {
     pub name: String,
     pub control_pipe_name: String,
@@ -31,6 +33,10 @@ impl Feed {
 
         self.add_element("shmsink", "shmsink");
         let mut shm_sink = self.pipeline.get_by_name("shmsink").unwrap();
+
+        // Remove old control pipes
+        let _ = fs::remove_file(&self.control_pipe_name);
+
         let pipe: &str = &self.control_pipe_name;
         shm_sink.set("socket-path", pipe);
         shm_sink.set("shm-size", shm_size);
