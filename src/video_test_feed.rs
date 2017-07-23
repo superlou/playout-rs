@@ -23,9 +23,7 @@ impl VideoTestFeed {
          feed.link("src", "convert");
          feed.add_video_shmsink("convert");
 
-         let video_test_feed = VideoTestFeed{feed: feed};
-
-         video_test_feed
+         VideoTestFeed{feed: feed}
     }
 
     pub fn set_pattern(&mut self, pattern: u32) {

@@ -42,8 +42,7 @@ impl Feed {
         // Remove old control pipes
         let _ = fs::remove_file(&self.control_pipe_name);
 
-        let pipe: &str = &self.control_pipe_name;
-        shm_sink.set("socket-path", pipe);
+        shm_sink.set("socket-path", &self.control_pipe_name as &str);
         shm_sink.set("shm-size", shm_size);
         shm_sink.set("wait-for-connection", 0);
         shm_sink.set("sync", true);
