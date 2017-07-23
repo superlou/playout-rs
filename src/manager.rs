@@ -45,7 +45,7 @@ impl Manager {
         if channel_id >= self.channels.len() {
             return;
         }
-                
+
         match self.get_program() {
             Some(x) => {x.is_program = false},
             None => {}
@@ -81,8 +81,8 @@ impl Manager {
 
         let dsk_feeds_list = self.build_dsks_feeds_list();
 
-        self.snowmix.send(&format!("vfeed alpha {} 0", program_id));
-        self.snowmix.send(&format!("vfeed alpha {} 1", preview_id));
+        self.snowmix.send(&format!("vfeed alpha {} 0", preview_id));
+        self.snowmix.send(&format!("vfeed alpha {} 1", program_id));
         self.snowmix.send(&format!("tcl eval SetFeedToOverlay {} {} {}",
                                    program_id,
                                    preview_id,
@@ -107,15 +107,13 @@ impl Manager {
     pub fn transition(&mut self, duration: f32) {
         let frames = (duration * self.framerate).ceil();
         let delta = 1. / frames;
-        let preview_snowmix_id = match self.get_preview() {
+        let snowmix_id = match self.get_preview() {
             Some(channel) => channel.snowmix_id,
             None => return
         };
 
-        self.snowmix.send(&format!("vfeed move alpha {} {} {}",
-                                   preview_snowmix_id,
-                                   delta,
-                                   frames));
+        let msg = &format!("vfeed move alpha {} {} {}", snowmix_id, delta, frames);
+        self.snowmix.send(msg);
 
        sleep(Duration::from_millis((duration * 1000.) as u64));
        self.take();
