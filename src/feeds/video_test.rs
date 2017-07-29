@@ -1,13 +1,13 @@
 extern crate gst;
 
-use feed::Feed;
+use feeds::Feed;
 
-pub struct VideoTestFeed {
+pub struct VideoTest {
     feed: Feed
 }
 
-impl VideoTestFeed {
-    pub fn new(name: &str, width: u32, height: u32, framerate: &str) -> VideoTestFeed {
+impl VideoTest {
+    pub fn new(name: &str, width: u32, height: u32, framerate: &str) -> VideoTest {
         let pipeline = gst::Pipeline::new(name).unwrap();
         let control_pipe_name = format!("/tmp/{}-control-pipe", name);
 
@@ -23,7 +23,7 @@ impl VideoTestFeed {
          feed.link("src", "convert");
          feed.add_video_shmsink("convert");
 
-         VideoTestFeed{feed: feed}
+         VideoTest{feed: feed}
     }
 
     pub fn set_pattern(&mut self, pattern: u32) {
