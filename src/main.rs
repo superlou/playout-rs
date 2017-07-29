@@ -11,6 +11,7 @@ mod snowmix_conn;
 
 use std::io;
 use manager::Manager;
+use feeds::Feed;
 
 fn main() {
     gst::init();

@@ -3,8 +3,13 @@ extern crate gst;
 use feeds::Feed;
 
 pub struct V4L2 {
-    feed: Feed,
-    device: String
+    name: String,
+    control_pipe_name: String,
+    width: u32,
+    height: u32,
+    framerate: String,
+    pipeline: gst::Pipeline,
+    device: String,
 }
 
 impl V4L2 {
@@ -12,7 +17,8 @@ impl V4L2 {
         let pipeline = gst::Pipeline::new(name).unwrap();
         let control_pipe_name = format!("/tmp/{}-control-pipe", name);
 
-        let mut feed = Feed{name: String::from(name),
+        let mut feed = V4L2{device: String::from(device),
+                            name: String::from(name),
                             control_pipe_name: control_pipe_name,
                             width: width,
                             height: height,
@@ -31,15 +37,24 @@ impl V4L2 {
         feed.link("convert1", "scale");
         feed.link("scale", "convert2");
         feed.add_video_shmsink("convert2");
+        feed
+    }
+}
 
-        V4L2{feed: feed, device: String::from(device)}
+impl Feed for V4L2 {
+    fn get_pipeline(&mut self) -> &mut gst::Pipeline {
+        &mut self.pipeline
     }
 
-    pub fn play(&mut self) {
-        self.feed.play();
+    fn get_dimensions(&self) -> (u32, u32) {
+        (self.width, self.height)
     }
 
-    pub fn stop(&mut self) {
-        self.feed.stop();
+    fn get_framerate(&self) -> &String {
+        &self.framerate
+    }
+
+    fn get_control_pipe_name(&self) -> &String {
+        &self.control_pipe_name
     }
 }
