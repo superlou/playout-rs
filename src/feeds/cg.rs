@@ -1,6 +1,7 @@
 extern crate gst;
 
 use feeds::Feed;
+use feeds::VideoConfig;
 
 pub struct CG {
     name: String,
@@ -12,15 +13,15 @@ pub struct CG {
 }
 
 impl CG {
-    pub fn new(name: &str, width: u32, height: u32, framerate: &str) -> CG {
+    pub fn new(name: &str, config: &VideoConfig) -> CG {
         let pipeline = gst::Pipeline::new(name).unwrap();
         let control_pipe_name = format!("/tmp/{}-control-pipe", name);
 
         let mut feed = CG{name: String::from(name),
                           control_pipe_name: control_pipe_name,
-                          width: width,
-                          height: height,
-                          framerate: String::from(framerate),
+                          width: config.width,
+                          height: config.height,
+                          framerate: config.framerate.clone(),
                           pipeline: pipeline};
 
         feed.add_element("filesrc", "src");

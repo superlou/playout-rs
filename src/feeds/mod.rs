@@ -10,6 +10,12 @@ pub use self::v4l2::V4L2;
 pub use self::video_test::{VideoTest, Pattern};
 pub use self::cg::CG;
 
+pub struct VideoConfig {
+    pub width: u32,
+    pub height: u32,
+    pub framerate: String,
+}
+
 pub trait Feed {
     fn get_pipeline(&mut self) -> &mut gst::Pipeline;
     fn get_dimensions(&self) -> (u32, u32);

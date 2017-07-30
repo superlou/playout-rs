@@ -1,6 +1,7 @@
 extern crate gst;
 
 use feeds::Feed;
+use feeds::VideoConfig;
 
 pub enum Pattern {
     SMPTE, Snow, Black, White, Red, Green, Blue, Checkers1, Checkers2, Checkers4,
@@ -18,15 +19,15 @@ pub struct VideoTest {
 }
 
 impl VideoTest {
-    pub fn new(name: &str, width: u32, height: u32, framerate: &str) -> VideoTest {
+    pub fn new(name: &str, config: &VideoConfig) -> VideoTest {
         let pipeline = gst::Pipeline::new(name).unwrap();
         let control_pipe_name = format!("/tmp/{}-control-pipe", name);
 
         let mut feed = VideoTest{name: String::from(name),
                                  control_pipe_name: control_pipe_name,
-                                 width: width,
-                                 height: height,
-                                 framerate: String::from(framerate),
+                                 width: config.width,
+                                 height: config.height,
+                                 framerate: config.framerate.clone(),
                                  pipeline: pipeline};
 
          feed.add_element("videotestsrc", "src");

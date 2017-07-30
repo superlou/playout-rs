@@ -1,6 +1,7 @@
 extern crate gst;
 
 use feeds::Feed;
+use feeds::VideoConfig;
 
 pub struct V4L2 {
     name: String,
@@ -13,16 +14,16 @@ pub struct V4L2 {
 }
 
 impl V4L2 {
-    pub fn new(name: &str, width: u32, height: u32, framerate: &str, device: &str) -> V4L2 {
+    pub fn new(name: &str, config: &VideoConfig, device: &str) -> V4L2 {
         let pipeline = gst::Pipeline::new(name).unwrap();
         let control_pipe_name = format!("/tmp/{}-control-pipe", name);
 
         let mut feed = V4L2{device: String::from(device),
                             name: String::from(name),
                             control_pipe_name: control_pipe_name,
-                            width: width,
-                            height: height,
-                            framerate: String::from(framerate),
+                            width: config.width,
+                            height: config.height,
+                            framerate: config.framerate.clone(),
                             pipeline: pipeline};
 
         feed.add_element("v4l2src", "src");

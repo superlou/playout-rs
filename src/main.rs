@@ -16,14 +16,17 @@ use feeds::Feed;
 fn main() {
     gst::init();
 
-    let mut feed1 = feeds::VideoTest::new("feed1", 1280, 720, "30/1");
+    let config = feeds::VideoConfig{width: 1280,
+                                    height: 720,
+                                    framerate: "30/1".to_string()};
+
+    let mut feed1 = feeds::VideoTest::new("feed1", &config);
     feed1.set_pattern(feeds::Pattern::Ball);
+    let mut feed2 = feeds::V4L2::new("feed2", &config, "/dev/video0");
+    let mut feed3 = feeds::CG::new("feed3", &config);
+
     feed1.play();
-
-    let mut feed2 = feeds::V4L2::new("feed2", 1280, 720, "30/1", "/dev/video0");
     feed2.play();
-
-    let mut feed3 = feeds::CG::new("feed3", 1280, 720, "30/1");
     feed3.play();
 
     let mut manager = Manager::new("127.0.0.1:9999");
