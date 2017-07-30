@@ -6,7 +6,7 @@ pub mod video_test;
 use std::fs;
 use gst::Element;
 pub use self::v4l2::V4L2;
-pub use self::video_test::VideoTest;
+pub use self::video_test::{VideoTest, Pattern};
 
 pub trait Feed {
     fn get_pipeline(&mut self) -> &mut gst::Pipeline;

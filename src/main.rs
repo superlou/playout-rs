@@ -17,6 +17,7 @@ fn main() {
     gst::init();
 
     let mut feed1 = feeds::VideoTest::new("feed1", 1280, 720, "30/1");
+    feed1.set_pattern(feeds::Pattern::Ball);
     feed1.play();
 
     let mut feed2 = feeds::V4L2::new("feed2", 1280, 720, "30/1", "/dev/video0");

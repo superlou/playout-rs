@@ -2,6 +2,12 @@ extern crate gst;
 
 use feeds::Feed;
 
+pub enum Pattern {
+    SMPTE, Snow, Black, White, Red, Green, Blue, Checkers1, Checkers2, Checkers4,
+    Checkers8, Circular, Blink, SMPTE75, ZonePlate, Gamut, ChromaZonePlate, Solid,
+    Ball, SMPTE100, Bar, Pinwheel, Spokes, Gradient, Colors
+}
+
 pub struct VideoTest {
     name: String,
     control_pipe_name: String,
@@ -31,9 +37,9 @@ impl VideoTest {
          feed
     }
 
-    pub fn set_pattern(&mut self, pattern: u32) {
+    pub fn set_pattern(&mut self, pattern: Pattern) {
         let mut element = self.get_element("src").unwrap();
-        element.set("pattern", pattern);
+        element.set("pattern", pattern as u32);
     }
 }
 
