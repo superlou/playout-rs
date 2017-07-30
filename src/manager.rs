@@ -147,4 +147,8 @@ impl Manager {
         }
         None
     }
+
+    pub fn quit(&mut self) {
+        self.snowmix.close();
+    }
 }

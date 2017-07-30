@@ -1,6 +1,8 @@
 use std::io::prelude::*;
 use std::net::TcpStream;
 use std::time::Duration;
+use std::process::{Command, Child, Stdio};
+use std::thread;
 
 use regex::Regex;
 use std::str;
@@ -8,13 +10,27 @@ use std::str;
 pub struct SnowmixConn {
     addr: String,
     version: String,
-    stream: TcpStream
+    stream: TcpStream,
+    child_process: Option<Child>
 }
 
 impl SnowmixConn {
     pub fn new(addr: &str) -> SnowmixConn {
-        let mut stream = TcpStream::connect(addr)
-                                    .expect("Unable to connect to Snowmix server");
+        let (mut stream, child) = match TcpStream::connect(addr) {
+            Ok(stream) => (stream, None),
+            Err(_) => {
+                println!("Snowmix server not found.  Attempting to spawn server.");
+                let child = Command::new("snowmix").arg("snowmix/config.ini")
+                                                   .stdin(Stdio::null())
+                                                   .stdout(Stdio::null())
+                                                   .stderr(Stdio::null())
+                                                   .spawn()
+                                                   .expect("Failed to spawn!");
+                thread::sleep(Duration::from_millis(250));
+                let stream = TcpStream::connect(addr).expect("Unable to spawn and connect");
+                (stream, Some(child))
+            }
+        };
 
         // Version string is received immediately on connecting
         let mut response = vec![0; 4096];
@@ -33,7 +49,8 @@ impl SnowmixConn {
 
         SnowmixConn {addr: String::from(addr),
                      version: String::from(version),
-                     stream: stream}
+                     stream: stream,
+                     child_process: child}
     }
 
     pub fn send(&mut self, msg: &str) {
@@ -51,7 +68,29 @@ impl SnowmixConn {
         // }
     }
 
-    pub fn info(&mut self) -> String {
-        format!("Connected to Snowmix server at {}, version {}", self.addr, self.version)
+    pub fn info(&self) -> String {
+        let origin = match self.child_process {
+            Some(_) => "spawned",
+            None => "existing"
+        };
+
+        format!("Connected to {} Snowmix server at {}, version {}",
+                origin, self.addr, self.version)
+    }
+
+    pub fn close(&mut self) {
+        match self.child_process {
+            Some(_) => self.send("quit"),
+            None => {}
+        }
+
+        thread::sleep(Duration::from_millis(250));
+
+        match self.child_process {
+            Some(ref mut process) => {
+                let _ = process.kill();
+            },
+            None => {}
+        };
     }
 }

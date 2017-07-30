@@ -47,6 +47,7 @@ fn main() {
 
     feed1.stop();
     feed2.stop();
+    manager.quit();
 
     println!("Done");
 }
