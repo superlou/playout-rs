@@ -23,6 +23,9 @@ fn main() {
     let mut feed2 = feeds::V4L2::new("feed2", 1280, 720, "30/1", "/dev/video0");
     feed2.play();
 
+    let mut feed3 = feeds::CG::new("feed3", 1280, 720, "30/1");
+    feed3.play();
+
     let mut manager = Manager::new("127.0.0.1:9999");
     manager.start();
 
@@ -48,6 +51,7 @@ fn main() {
 
     feed1.stop();
     feed2.stop();
+    feed3.stop();
     manager.quit();
 
     println!("Done");
