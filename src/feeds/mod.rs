@@ -63,6 +63,28 @@ pub trait Feed {
         last_element.link_filtered(&mut shm_sink, &caps);
     }
 
+    fn add_video_shmsrc(&mut self, first_element_name: &str) {
+        let mut first_element = self.get_pipeline().get_by_name(first_element_name).unwrap();
+        let (width, height) = self.get_dimensions();
+        let framerate = self.get_framerate().clone();
+
+        self.add_element("shmsrc", "src");
+        let mut src = self.get_element("src").unwrap();
+        src.set("socket-path", &self.get_control_pipe_name() as &str);
+        src.set("do-timestamp", true);
+        src.set("is-live", true);
+
+        let mixer_format = "video/x-raw, format=BGRA, pixel-aspect-ratio=1/1, interlace-mode=progressive";
+        let caps_string = format!("{}, width={}, height={}, framerate={}",
+                                  mixer_format,
+                                  width,
+                                  height,
+                                  framerate);
+
+        let caps = gst::Caps::from_string(&caps_string).unwrap();
+        src.link_filtered(&mut first_element, &caps);
+    }
+
     fn play(&mut self) {
         self.get_pipeline().play();
     }
