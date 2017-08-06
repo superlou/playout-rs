@@ -1,4 +1,4 @@
-extern crate gst;
+use gst;
 use gst::Element;
 use feeds;
 

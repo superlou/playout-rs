@@ -1,5 +1,4 @@
-extern crate gst;
-
+use gst;
 use std::path::PathBuf;
 use std::process::{Command};
 use uuid::Uuid;

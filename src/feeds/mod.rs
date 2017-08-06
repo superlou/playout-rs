@@ -1,9 +1,8 @@
-extern crate gst;
-
 pub mod v4l2;
 pub mod video_test;
 pub mod cg;
 
+use gst;
 use std::fs;
 use gst::Element;
 pub use self::v4l2::V4L2;

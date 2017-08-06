@@ -1,5 +1,4 @@
-extern crate gst;
-
+use gst;
 use feeds::Feed;
 use feeds::VideoConfig;
 
