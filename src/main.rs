@@ -22,10 +22,10 @@ fn main() {
                                     height: 720,
                                     framerate: "30/1".to_string()};
 
-    let mut feed1 = feeds::VideoTest::new("feed3", &config);
+    let mut feed1 = feeds::VideoTest::new("feed1", &config);
     feed1.set_pattern(feeds::Pattern::Ball);
     let mut feed2 = feeds::V4L2::new("feed2", &config, "/dev/video0");
-    let mut feed3 = feeds::CG::new("feed1", &config);
+    let mut feed3 = feeds::CG::new("feed3", &config);
     feed3.create_slide(PathBuf::from("media/lower_third.svg"));
     feed3.select_slide(0);
 
