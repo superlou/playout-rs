@@ -8,12 +8,14 @@ extern crate uuid;
 mod feeds;
 mod manager;
 mod channel;
+mod monitor;
 mod snowmix_conn;
 
 use std::io;
 use std::path::PathBuf;
 use manager::Manager;
 use feeds::Feed;
+use monitor::Monitor;
 
 fn main() {
     gst::init();
@@ -35,6 +37,9 @@ fn main() {
 
     let mut manager = Manager::new("127.0.0.1:9999");
     manager.start();
+
+    let mut monitor = Monitor::new("/tmp/mixer1", config);
+    monitor.play();
 
     let mut run = true;
 
@@ -59,6 +64,7 @@ fn main() {
     feed1.stop();
     feed2.stop();
     feed3.stop();
+    monitor.stop();
     manager.quit();
 
     println!("Done");
