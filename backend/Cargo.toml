@@ -1,0 +1,11 @@
+[package]
+name = "playout-backend"
+version = "0.1.0"
+authors = ["superlou <lousimons@gmail.com>"]
+
+[dependencies]
+gstreamer = "0.7.1"
+bytes = "0.4"
+futures = "0.1"
+regex = "0.2"
+uuid = {version = "0.4", features = ["v4"]}
