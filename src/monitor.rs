@@ -9,6 +9,13 @@ pub struct Monitor {
     pipeline: gst::Pipeline,
 }
 
+extern {
+    fn gst_video_overlay_set_window_handle(
+        GstXOverlay: *mut gst::ffi::Struct__GstElement,
+        xwindow_id: u32
+    );
+}
+
 impl Monitor {
     pub fn new(socket_path: &str, config: VideoConfig) -> Monitor {
         let pipeline = gst::Pipeline::new("pipeline").unwrap();
@@ -22,7 +29,8 @@ impl Monitor {
         monitor.add_element("queue", "queue1");
         monitor.add_element("videoconvert", "videoconvert");
         monitor.add_element("queue", "queue2");
-        monitor.add_element("autovideosink", "videosink");
+        monitor.add_element("xvimagesink", "videosink");
+        // monitor.set_window_xid(148897799);
 
         monitor.link("queue1", "videoconvert");
         monitor.link("videoconvert", "queue2");
@@ -31,6 +39,13 @@ impl Monitor {
         monitor.add_video_shmsrc("queue1");
 
         monitor
+    }
+
+    fn set_window_xid(&mut self, xid: u32) {
+        let mut videosink = self.get_element("videosink").unwrap();
+        unsafe {
+            gst_video_overlay_set_window_handle(videosink.gst_element_mut(), xid);
+        }
     }
 }
 
