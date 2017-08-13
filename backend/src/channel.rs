@@ -1,5 +1,6 @@
 use std::fmt;
 
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Channel {
     pub id: u8,
     pub snowmix_id: u8,

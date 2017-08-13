@@ -30,6 +30,10 @@ impl Manager {
                  framerate: 30.}
     }
 
+    pub fn get_channels_copy(&self) -> Vec<Channel> {
+        self.channels.clone()
+    }
+
     pub fn start(&mut self) {
         println!("{}", self.snowmix.info());
         self.set_program(0);
