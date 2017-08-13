@@ -89,11 +89,9 @@ fn main() {
     feed2.play();
     feed3.play();
 
-    let mut manager = Manager::new("127.0.0.1:9999");
+    let mut manager = Manager::new("127.0.0.1:9999", &config);
     manager.start();
-
-    let mut monitor = Monitor::new("/tmp/mixer1", config);
-    monitor.play();
+    manager.create_monitor(String::from("/tmp/mixer1"));
 
     let (sender, receiver) = mpsc::sync_channel::<BackendMsg>(256);
     let sender2 = sender.clone();
@@ -136,7 +134,6 @@ fn main() {
     feed1.stop();
     feed2.stop();
     feed3.stop();
-    monitor.stop();
     manager.quit();
 
     println!("Done");

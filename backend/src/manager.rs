@@ -2,17 +2,22 @@ use std::thread::sleep;
 use std::time::Duration;
 use snowmix_conn::SnowmixConn;
 use channel::Channel;
+use monitor::Monitor;
+use feeds::{Feed, VideoConfig};
 
 pub struct Manager {
     snowmix: SnowmixConn,
     channels: Vec<Channel>,
-    framerate: f32
+    monitors: Vec<Monitor>,
+    framerate: f32,
+    video_config: VideoConfig,
 }
 
 impl Manager {
-    pub fn new(snowmix_addr: &str) -> Manager {
+    pub fn new(snowmix_addr: &str, config: &VideoConfig) -> Manager {
         let snowmix = SnowmixConn::new(snowmix_addr);
         let mut channels: Vec<Channel> = Vec::new();
+        let mut monitors: Vec<Monitor> = Vec::new();
 
         for i in 0..8 {
             channels.push(Channel {
@@ -27,7 +32,9 @@ impl Manager {
 
          Manager{snowmix: snowmix,
                  channels: channels,
-                 framerate: 30.}
+                 monitors: monitors,
+                 framerate: 30.0,
+                 video_config: config.clone()}
     }
 
     pub fn get_channels_copy(&self) -> Vec<Channel> {
@@ -153,6 +160,16 @@ impl Manager {
     }
 
     pub fn quit(&mut self) {
+        for monitor in &mut self.monitors {
+            monitor.stop();
+        }
+
         self.snowmix.close();
+    }
+
+    pub fn create_monitor(&mut self, socket_path: String) {
+        let mut monitor = Monitor::new(&socket_path, &self.video_config);
+        monitor.play();
+        self.monitors.push(monitor);
     }
 }

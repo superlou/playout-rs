@@ -17,7 +17,7 @@ extern {
 }
 
 impl Monitor {
-    pub fn new(socket_path: &str, config: VideoConfig) -> Monitor {
+    pub fn new(socket_path: &str, config: &VideoConfig) -> Monitor {
         let pipeline = gst::Pipeline::new("pipeline").unwrap();
 
         let mut monitor = Monitor{width: config.width,
