@@ -121,13 +121,8 @@ fn main() {
             BackendMsg::GetChannels{sender: x} => {
                 x.send(BackendResponse::BusStatus{channels: manager.get_channels_copy()}).unwrap();
             }
+            BackendMsg::SetPreview{id: x} => manager.set_preview(x as usize),
             _ => {},
-            // input => {
-            //     match input.parse::<i32>() {
-            //         Ok(id) => manager.set_preview(id as usize),
-            //         Err(_) => {}
-            //     }
-            // }
         };
     }
 
