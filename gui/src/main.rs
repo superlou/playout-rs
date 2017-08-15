@@ -1,5 +1,5 @@
 #![feature(proc_macro)]
-
+extern crate gst;
 extern crate libc;
 extern crate gdk;
 extern crate gtk;
@@ -12,14 +12,15 @@ extern crate relm_derive;
 use relm::{Widget};
 use relm_attributes::widget;
 use gtk::{Inhibit, OrientableExt, WidgetExt};
-use gtk::Orientation::{Vertical};
+use gtk::Orientation::{Horizontal, Vertical};
 
 mod bus;
 mod bus_button;
-mod monitor;
+mod monitor_area;
 mod style;
+mod monitor;
 
-use monitor::Monitor;
+use monitor_area::MonitorArea;
 use bus::Bus;
 
 use self::Msg::*;
@@ -44,7 +45,12 @@ impl Widget for Win {
         gtk::Window {
             gtk::Box {
                 orientation: Vertical,
-                Monitor,
+                gtk::Box {
+                    orientation: Horizontal,
+                    MonitorArea((String::from("Program"), String::from("/tmp/mixer1"))),
+                    MonitorArea((String::from("Feed 1"), String::from("/tmp/feed1-control-pipe"))),
+                    MonitorArea((String::from("Feed 2"), String::from("/tmp/feed2-control-pipe"))),
+                }
                 Bus,
                 Bus,
             }
@@ -54,5 +60,6 @@ impl Widget for Win {
 }
 
 fn main() {
+    gst::init();
     Win::run(()).unwrap();
 }
