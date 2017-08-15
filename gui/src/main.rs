@@ -35,7 +35,7 @@ impl Widget for Win {
     fn model() -> () {
     }
 
-    fn update(&mut self, event: Msg, _model: &mut ()) {
+    fn update(&mut self, event: Msg) {
         match event {
             Quit => gtk::main_quit(),
         }
@@ -51,10 +51,10 @@ impl Widget for Win {
                     MonitorArea((String::from("Feed 1"), String::from("/tmp/feed1-control-pipe"))),
                     MonitorArea((String::from("Feed 2"), String::from("/tmp/feed2-control-pipe"))),
                     MonitorArea((String::from("Feed 3"), String::from("/tmp/feed3-control-pipe"))),
-                }
+                },
                 Bus,
                 Bus,
-            }
+            },
             delete_event(_, _) => (Quit, Inhibit(false)),
         }
     }

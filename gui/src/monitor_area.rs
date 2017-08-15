@@ -2,9 +2,9 @@ use gdk;
 use gtk;
 use gtk::{WidgetExt, OrientableExt};
 use relm_attributes::widget;
-use relm::{Component, Widget, RemoteRelm};
+use relm::{Widget};
 use monitor::{VideoConfig, Monitor, Feed};
-use std::sync::Arc;
+use std::rc::Rc;
 use gtk::Orientation::Vertical;
 
 #[derive(Msg)]
@@ -12,11 +12,10 @@ pub enum MonitorAreaMsg {
     Realized
 }
 
-#[derive(Clone)]
 pub struct MonitorAreaModel {
     label: String,
     feed_path: String,
-    monitor: Option<Arc<Monitor>>
+    monitor: Option<Rc<Monitor>>
 }
 
 extern {
@@ -25,7 +24,7 @@ extern {
 
 #[widget]
 impl Widget for MonitorArea {
-    fn init_view(&self, model: &mut MonitorAreaModel) {
+    fn init_view(&mut self) {
         self.drawing_area.set_size_request(356, 200);
     }
 
@@ -33,11 +32,12 @@ impl Widget for MonitorArea {
         MonitorAreaModel {label: params.0, feed_path: params.1, monitor: None}
     }
 
-    fn update(&mut self, event: MonitorAreaMsg, model: &mut MonitorAreaModel) {
+    fn update(&mut self, event: MonitorAreaMsg) {
         match event {
             MonitorAreaMsg::Realized => {
-                let monitor = self.create_monitor(&model.feed_path);
-                model.monitor = monitor;
+                let feed_path = self.model.feed_path.clone();
+                let monitor = self.create_monitor(&feed_path);
+                self.model.monitor = monitor;
             }
         }
     }
@@ -50,7 +50,7 @@ impl Widget for MonitorArea {
                 realize => MonitorAreaMsg::Realized
             },
             gtk::Label {
-                text: &model.label
+                text: &self.model.label
             }
         }
     }
@@ -64,7 +64,7 @@ impl MonitorArea {
         }
     }
 
-    fn create_monitor(&mut self, socket_path: &str) -> Option<Arc<Monitor>> {
+    fn create_monitor(&mut self, socket_path: &str) -> Option<Rc<Monitor>> {
         // todo This config should not be hard-coded.
         // Config should come from backend.
         let config = VideoConfig{width: 1280,
@@ -73,6 +73,6 @@ impl MonitorArea {
         let mut monitor = Monitor::new(socket_path, &config);
         monitor.set_window_xid(self.get_xid());
         monitor.play();
-        Some(Arc::new(monitor))
+        Some(Rc::new(monitor))
     }
 }

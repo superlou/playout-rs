@@ -1,5 +1,5 @@
 use gtk;
-use relm::{Component, Widget, RemoteRelm, ContainerWidget};
+use relm::{Relm, Component, Widget, Update, ContainerWidget};
 use gtk::WidgetExt;
 use gtk::Orientation::{Horizontal};
 use bus_button::{BusButton, BusButtonModel, BusButtonMsg};
@@ -9,40 +9,31 @@ pub enum BusMsg {
     Selected(u32)
 }
 
-#[derive(Clone)]
 pub struct BusModel {
-    channels: Vec<BusButtonModel>
 }
 
-#[derive(Clone)]
 pub struct Bus {
+    model: BusModel,
     buttons: Vec<Component<BusButton>>,
     root: gtk::Box,
 }
 
-impl Widget for Bus {
+impl Update for Bus {
     type Model = BusModel;
     type ModelParam = ();
     type Msg = BusMsg;
-    type Root = gtk::Box;
 
-    fn model(_: ()) -> BusModel {
+    fn model(_: &Relm<Self>, _: ()) -> BusModel {
         let mut channels = vec![];
         channels.push(BusButtonModel{channel_id: 0, enabled: true, active: true});
         channels.push(BusButtonModel{channel_id: 1, enabled: true, active: false});
         channels.push(BusButtonModel{channel_id: 2, enabled: true, active: false});
         channels.push(BusButtonModel{channel_id: 3, enabled: true, active: false});
 
-        BusModel {
-            channels: channels
-        }
+        BusModel {}
     }
 
-    fn root(&self) -> &Self::Root {
-        &self.root
-    }
-
-    fn update(&mut self, event: BusMsg, _model: &mut BusModel) {
+    fn update(&mut self, event: BusMsg) {
         match event {
             BusMsg::Selected(x) => {
                 for button in &mut self.buttons {
@@ -52,14 +43,26 @@ impl Widget for Bus {
             }
         }
     }
+}
 
-    fn view(relm: &RemoteRelm<Self>, model: &BusModel) -> Self {
+impl Widget for Bus {
+    type Root = gtk::Box;
+
+    fn root(&self) -> Self::Root {
+        self.root.clone()
+    }
+
+    fn view(relm: &Relm<Self>, model: Self::Model) -> Self {
+        let mut channels = vec![];
+        channels.push(BusButtonModel{channel_id: 0, enabled: true, active: true});
+        channels.push(BusButtonModel{channel_id: 1, enabled: true, active: false});
+        channels.push(BusButtonModel{channel_id: 2, enabled: true, active: false});
+        channels.push(BusButtonModel{channel_id: 3, enabled: true, active: false});
+
         let mut buttons = vec![];
         let hbox = gtk::Box::new(Horizontal, 0);
 
-        let model = model.clone();
-
-        for channel in model.channels {
+        for channel in channels {
             let widget = hbox.add_widget::<BusButton, _>(&relm, (channel.channel_id, channel.enabled, channel.active));
             connect!(widget@BusButtonMsg::Request, relm, BusMsg::Selected(channel.channel_id));
             buttons.push(widget);
@@ -69,6 +72,7 @@ impl Widget for Bus {
 
         Bus {
             buttons: buttons,
+            model: model,
             root: hbox,
         }
     }
