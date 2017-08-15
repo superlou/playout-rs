@@ -1,11 +1,11 @@
 use gdk;
 use gtk;
-use gtk::{WidgetExt};
+use gtk::{WidgetExt, OrientableExt};
 use relm_attributes::widget;
 use relm::{Component, Widget, RemoteRelm};
 use monitor::{VideoConfig, Monitor, Feed};
-use std::rc::Rc;
 use std::sync::Arc;
+use gtk::Orientation::Vertical;
 
 #[derive(Msg)]
 pub enum MonitorAreaMsg {
@@ -18,12 +18,6 @@ pub struct MonitorAreaModel {
     feed_path: String,
     monitor: Option<Arc<Monitor>>
 }
-
-// #[derive(Clone)]
-// pub struct MonitorArea {
-//     root: gtk::DrawingArea,
-//     monitor: Option<Rc<Monitor>>,
-// }
 
 extern {
     fn gdk_x11_window_get_xid(window: gdk::Window) -> u32;
@@ -49,16 +43,22 @@ impl Widget for MonitorArea {
     }
 
     view! {
-        #[name="drawing_area"]
-        gtk::DrawingArea {
-            realize => MonitorAreaMsg::Realized
+        gtk::Box {
+            orientation: Vertical,
+            #[name="drawing_area"]
+            gtk::DrawingArea {
+                realize => MonitorAreaMsg::Realized
+            },
+            gtk::Label {
+                text: &model.label
+            }
         }
     }
 }
 
 impl MonitorArea {
     fn get_xid(&mut self) -> u32 {
-        let window = self.root().get_window().unwrap();
+        let window = self.drawing_area.get_window().unwrap();
         unsafe {
             gdk_x11_window_get_xid(window)
         }
