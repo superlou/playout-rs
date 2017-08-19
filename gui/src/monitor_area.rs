@@ -9,7 +9,8 @@ use gtk::Orientation::Vertical;
 
 #[derive(Msg)]
 pub enum MonitorAreaMsg {
-    Realized
+    Realized,
+    SetLabelAndPath(String, String),
 }
 
 pub struct MonitorAreaModel {
@@ -24,12 +25,8 @@ extern {
 
 #[widget]
 impl Widget for MonitorArea {
-    fn init_view(&mut self) {
-        self.drawing_area.set_size_request(356, 200);
-    }
-
-    fn model(params: (String, String)) -> MonitorAreaModel {
-        MonitorAreaModel {label: params.0, feed_path: params.1, monitor: None}
+    fn model(_: ()) -> MonitorAreaModel {
+        MonitorAreaModel {label: String::new(), feed_path: String::new(), monitor: None}
     }
 
     fn update(&mut self, event: MonitorAreaMsg) {
@@ -37,6 +34,12 @@ impl Widget for MonitorArea {
             MonitorAreaMsg::Realized => {
                 let feed_path = self.model.feed_path.clone();
                 let monitor = self.create_monitor(&feed_path);
+                self.model.monitor = monitor;
+            }
+            MonitorAreaMsg::SetLabelAndPath(label, path) => {
+                self.model.label = label;
+                self.model.feed_path = path.clone();
+                let monitor = self.create_monitor(&path);
                 self.model.monitor = monitor;
             }
         }
@@ -47,7 +50,9 @@ impl Widget for MonitorArea {
             orientation: Vertical,
             #[name="drawing_area"]
             gtk::DrawingArea {
-                realize => MonitorAreaMsg::Realized
+                property_width_request: 356,
+                property_height_request: 200,
+                realize => MonitorAreaMsg::Realized,
             },
             gtk::Label {
                 text: &self.model.label
@@ -57,6 +62,11 @@ impl Widget for MonitorArea {
 }
 
 impl MonitorArea {
+    fn set_name_and_path(&mut self, label: &str, feed_path: &str) {
+        self.model.label = String::from(label);
+        self.model.feed_path = String::from(feed_path);
+    }
+
     fn get_xid(&mut self) -> u32 {
         let window = self.drawing_area.get_window().unwrap();
         unsafe {

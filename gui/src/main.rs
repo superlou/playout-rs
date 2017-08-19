@@ -17,10 +17,12 @@ use gtk::Orientation::{Horizontal, Vertical};
 mod bus;
 mod bus_button;
 mod monitor_area;
+mod monitor_grid;
 mod style;
 mod monitor;
 
-use monitor_area::MonitorArea;
+use monitor_area::{MonitorArea, MonitorAreaMsg};
+use monitor_grid::{MonitorGrid, MonitorGridMsg};
 use bus::Bus;
 
 use self::Msg::*;
@@ -41,16 +43,47 @@ impl Widget for Win {
         }
     }
 
+    fn init_view(&mut self) {
+        self.program_monitor.emit(MonitorAreaMsg::SetLabelAndPath(
+            "Program".to_string(),
+            "/tmp/mixer1".to_string(),
+        ));
+
+        self.monitors.emit(MonitorGridMsg::SetMonitor(
+            0, "Feed 1".to_string(), "/tmp/feed1-control-pipe".to_string()
+        ));
+
+        self.monitors.emit(MonitorGridMsg::SetMonitor(
+            1, "Feed 2".to_string(), "/tmp/feed2-control-pipe".to_string()
+        ));
+
+        self.monitors.emit(MonitorGridMsg::SetMonitor(
+            2, "Feed 3".to_string(), "/tmp/feed3-control-pipe".to_string()
+        ));
+
+        self.monitors.emit(MonitorGridMsg::SetMonitor(
+            3, "Feed 4".to_string(), "/tmp/feed4-control-pipe".to_string()
+        ));
+
+        self.monitors.emit(MonitorGridMsg::SetMonitor(
+            4, "Feed 5".to_string(), "/tmp/feed5-control-pipe".to_string()
+        ));
+
+        self.monitors.emit(MonitorGridMsg::SetMonitor(
+            5, "Feed 6".to_string(), "/tmp/feed6-control-pipe".to_string()
+        ));
+    }
+
     view! {
         gtk::Window {
             gtk::Box {
                 orientation: Vertical,
                 gtk::Box {
                     orientation: Horizontal,
-                    MonitorArea((String::from("Program"), String::from("/tmp/mixer1"))),
-                    MonitorArea((String::from("Feed 1"), String::from("/tmp/feed1-control-pipe"))),
-                    MonitorArea((String::from("Feed 2"), String::from("/tmp/feed2-control-pipe"))),
-                    MonitorArea((String::from("Feed 3"), String::from("/tmp/feed3-control-pipe"))),
+                    #[name="monitors"]
+                    MonitorGrid(3, 2),
+                    #[name="program_monitor"]
+                    MonitorArea,
                 },
                 Bus,
                 Bus,
