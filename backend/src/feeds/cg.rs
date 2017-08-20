@@ -1,4 +1,5 @@
 use gst;
+use std::fs;
 use std::path::PathBuf;
 use std::process::{Command};
 use uuid::Uuid;
@@ -86,6 +87,7 @@ impl Feed for CG {
 impl Slide {
     pub fn new(svg_path: PathBuf, width: u32, height: u32) -> Slide {
         let mut png_path = PathBuf::from("/tmp/slides");
+        let _result = fs::create_dir(&png_path);
         png_path.push(Uuid::new_v4().to_string());
         png_path.set_extension("png");
 

@@ -92,6 +92,8 @@ fn main() {
     let mut manager = Manager::new("127.0.0.1:9999", &config);
     manager.start();
 
+    // Monitor::new("/tmp/mixer1", &config).play();
+
     let (sender, receiver) = mpsc::sync_channel::<BackendMsg>(256);
     let sender2 = sender.clone();
 
