@@ -41,7 +41,7 @@ impl Monitor {
         monitor
     }
 
-    fn set_window_xid(&mut self, xid: u32) {
+    pub fn set_window_xid(&mut self, xid: u32) {
         let mut videosink = self.get_element("videosink").unwrap();
         unsafe {
             gst_video_overlay_set_window_handle(videosink.gst_element_mut(), xid);

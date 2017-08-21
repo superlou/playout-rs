@@ -1,47 +1,23 @@
 #![feature(plugin)]
 #![plugin(rocket_codegen)]
-#[macro_use] extern crate serde_derive;
-extern crate serde;
-extern crate serde_json;
-extern crate gst;
-extern crate regex;
-extern crate uuid;
 extern crate rocket;
 #[macro_use] extern crate rocket_contrib;
-
-mod feeds;
-mod manager;
-mod channel;
-mod monitor;
-mod snowmix_conn;
-mod console;
+extern crate gst;
+extern crate playout_backend;
 
 use std::path::PathBuf;
 use std::thread;
 use std::sync::mpsc;
-use std::sync::mpsc::{Sender, SyncSender};
-use manager::Manager;
-use feeds::Feed;
-use monitor::Monitor;
-use console::console_task;
-use channel::Channel;
+use std::sync::mpsc::{SyncSender};
+use playout_backend::Manager;
+use playout_backend::feeds;
+use playout_backend::feeds::Feed;
+use playout_backend::Monitor;
+use playout_backend::console_task;
+use playout_backend::Channel;
+use playout_backend::{BackendMsg, BackendResponse};
 use rocket::State;
 use rocket_contrib::Json;
-
-pub enum BackendMsg {
-    Quit,
-    Take,
-    AutoTransition {secs: f32},
-    SetPreview {id: i32},
-    SetProgram {id: i32},
-    GetServerStatus {sender: Sender<BackendResponse>},
-    GetChannels {sender: Sender<BackendResponse>},
-}
-
-pub enum BackendResponse {
-    OK(String),
-    BusStatus {channels: Vec<Channel>},
-}
 
 #[get("/")]
 fn index(sender: State<SyncSender<BackendMsg>>) -> String {

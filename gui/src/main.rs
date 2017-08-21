@@ -8,6 +8,7 @@ extern crate relm;
 extern crate relm_attributes;
 #[macro_use]
 extern crate relm_derive;
+extern crate playout_backend;
 
 use relm::{Widget};
 use relm_attributes::widget;
@@ -19,7 +20,6 @@ mod bus_button;
 mod monitor_area;
 mod monitor_grid;
 mod style;
-mod monitor;
 
 use monitor_area::{MonitorArea, MonitorAreaMsg};
 use monitor_grid::{MonitorGrid, MonitorGridMsg};

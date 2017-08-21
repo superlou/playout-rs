@@ -3,7 +3,8 @@ use gtk;
 use gtk::{WidgetExt, OrientableExt};
 use relm_attributes::widget;
 use relm::{Widget};
-use monitor::{VideoConfig, Monitor, Feed};
+use playout_backend::Monitor;
+use playout_backend::feeds::{VideoConfig, Feed};
 use std::rc::Rc;
 use gtk::Orientation::Vertical;
 
